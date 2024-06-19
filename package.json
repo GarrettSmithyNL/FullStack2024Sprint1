@@ -1,0 +1,23 @@
+{
+  "name": "passoutstanding",
+  "version": "1.0.0",
+  "description": "This CLI will generate tokens for users",
+  "main": "PO.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GarrettSmithyNL/FullStack2024Sprint1.git"
+  },
+  "author": "Da Bys",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GarrettSmithyNL/FullStack2024Sprint1/issues"
+  },
+  "homepage": "https://github.com/GarrettSmithyNL/FullStack2024Sprint1#readme",
+  "dependencies": {
+    "color": "^4.2.3",
+    "crc": "^4.3.2"
+  }
+}
