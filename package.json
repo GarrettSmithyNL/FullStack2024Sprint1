@@ -18,6 +18,8 @@
   "homepage": "https://github.com/GarrettSmithyNL/FullStack2024Sprint1#readme",
   "dependencies": {
     "color": "^4.2.3",
-    "crc": "^4.3.2"
+    "crc": "^4.3.2",
+    "date-fns": "^3.6.0",
+    "uuid": "^10.0.0"
   }
 }
