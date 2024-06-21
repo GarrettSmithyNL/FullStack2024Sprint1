@@ -128,3 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# tokens file created by the tokensApp function called through tokens --new
+tokens

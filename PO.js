@@ -2,8 +2,10 @@ global.DEBUG = false;
 
 const fs = require("fs");
 const { checkAppInit } = require("./init.js");
+const { tokenApp } = require("./token.js");
 
 const emitter = require("./emitter.js");
+
 
 const myArgs = process.argv.slice(2);
 
@@ -22,6 +24,8 @@ switch (myArgs[0]) {
     break;
   case "token":
   case "t":
+    if (DEBUG) console.log(myArgs[0], '- generating token....');
+    tokenApp();
     emitter.emit("event", "EVENT", "Called token");
     break;
   case "--help":
