@@ -43,16 +43,16 @@ let createFiles = () => {
   // Creates users.json
   try {
     let tokenData = JSON.stringify(tokenjson, null, 2);
-    if (!fs.existsSync(path.join(__dirname, "./users/users.json"))) {
-      fs.writeFile("./users/users.json", tokenData, (error) => {
+    if (!fs.existsSync(path.join(__dirname, "./tokens/tokens.json"))) {
+      fs.writeFile("./tokens/tokens.json", tokenData, (error) => {
         if (error) {
-          emitter.emit("error", "ERROR", `Error creating user.json.`);
+          emitter.emit("error", "ERROR", `Error creating tokens.json.`);
         } else {
-          console.log("Data written to user file.");
+          console.log("Data written to tokens file.");
         }
       });
     } else {
-      console.log("User.json already created.");
+      console.log("tokens.json already created.");
     }
   } catch {
     emitter.emit("error", "ERROR", `Error creating files.`);

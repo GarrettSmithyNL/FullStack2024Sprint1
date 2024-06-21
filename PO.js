@@ -1,10 +1,8 @@
 global.DEBUG = false;
 
-const fs = require("fs");
-
 const { checkAppInit, initalizeApp } = require("./init.js");
 const emitter = require("./emitter.js");
-const { userController } = require("./user.js");
+const { tokens } = require("./token.js");
 
 const myArgs = process.argv.slice(2);
 
@@ -23,11 +21,8 @@ switch (myArgs[0]) {
     break;
   case "token":
   case "t":
+    tokens();
     emitter.emit("event", "EVENT", "Called token");
-    break;
-  case "user":
-  case "u":
-    userController();
     break;
   case "--help":
   case "--h":
