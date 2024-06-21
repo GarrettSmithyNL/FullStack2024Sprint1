@@ -1,7 +1,6 @@
 const myArgs = process.argv.slice(2);
 const { format } = require("date-fns");
 const fs = require("fs");
-const readline = require("readline");
 const path = require("path");
 const emitter = require("./emitter.js");
 const { addDays } = require("date-fns");
@@ -94,7 +93,66 @@ let tokenUpdate = (updateType, userName, newData) => {
   }
 };
 
+function searchByUsername(username) {
+  fs.readFile(path.join(__dirname, "/tokens/tokens.json"), "utf-8", (error, data) => {
+    if (error) {
+      console.error("Problem reading tokens.json:", error);
+      return;
+    }
+    try {
+      const tokens = JSON.parse(data);
+      const user = tokens.find(token => token.username === username);
+      if (user) {
+        console.log(`User found:`, user);
+      } else {
+        console.log(`User with username ${username} not found.`);
+      }
+    } catch (parseError) {
+      console.error("Error parsing tokens.json:", parseError);
+    }
+  });
+}
 
+function searchByEmail(email) {
+  fs.readFile(path.join(__dirname, "/tokens/tokens.json"), "utf-8", (error, data) => {
+    if (error) {
+      console.error("Problem reading tokens.json:", error);
+      return;
+    }
+    try {
+      const tokens = JSON.parse(data);
+      const user = tokens.find(token => token.email === email);
+      if (user) {
+        console.log(`User found:`, user);
+      } else {
+        console.log(`User with email ${email} not found.`);
+      }
+    } catch (parseError) {
+      console.error("Error parsing tokens.json:", parseError);
+    }
+  });
+}
+
+function searchByPhone(phone) {
+  fs.readFile(path.join(__dirname, "/tokens/tokens.json"), "utf-8", (error, data) => {
+    if (error) {
+      console.error("Problem reading tokens.json:", error);
+      return;
+    }
+    try {
+      const tokens = JSON.parse(data);
+      const user = tokens.find(token => token.phone === phone);
+      if (user) {
+        console.log(`User found:`, user);
+      } else {
+        console.log(`User with phone number ${phone} not found.`);
+      }
+    } catch (parseError) {
+      console.error("Error parsing tokens.json:", parseError);
+    }
+  });
+
+}
 let tokens = () => {
   if (!fs.existsSync(path.join(__dirname, "./tokens/tokens.json"))) {
     console.log('No tokens.json found. Please use "PO init --all"');
@@ -120,10 +178,13 @@ let tokens = () => {
       case "--search":
         switch (myArgs[2]) {
           case "u":
+            searchByUsername(myArgs[3]);
             break;
           case "e":
+            searchByEmail(myArgs[3]);
             break;
           case "p":
+            searchByPhone(myArgs[3]);
             break;
         }
         break;
