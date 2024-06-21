@@ -7,17 +7,12 @@ const {format, addDays} = require('date-fns');
 
 const myArgs = process.argv.slice(2);
 
-
-// Functions ----------------------------------------------------------------------------------------------------------
+newToken.expiryDate = format(addDays(new Date(), 3), 'yyyyMMdd HH:mm:ss');
 
 function generateToken(username) {
     newToken.token = crc32(username).toString(8);
-    const expiryDate = format(addDays(new Date(), 3), 'yyyyMMdd HH:mm:ss'); 
     let baseToken = crc32(username).toString(8);
-    let now = new Date();
-    let timestamp = format(now, 'yyyy-MM-dd HH:mm:ss');
-    let expires = expiryDate // Adds 3 days to the current date
-    return `${baseToken}-${timestamp}-expires:${expires}`;
+    return `${baseToken}`;
 }
 
 
