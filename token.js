@@ -21,23 +21,27 @@ let tokenNew = (newUsername) => {
 
   newToken.created = format(new Date(), "yyyy-MM-dd HH:mm:ss");
   newToken.username = newUsername;
+
+  // add the token generation here
   newToken.expires = format(addDays(new Date(), 3), 'yyyy-MM-dd HH:mm:ss');
   newToken.token = crc32(newUsername).toString(8);
 
   fs.readFile(__dirname + "/tokens/tokens.json", "utf-8", (error, data) => {
     if (error) throw error;
     let tokens = JSON.parse(data);
-    tokens.push(newToken);
-    updatedTokens = JSON.stringify(tokens);
-
+    tokens.push(newToken); // Add the new token to the array
+    // Pretty-print the JSON with an indentation of 2 spaces
+    let updatedTokens = JSON.stringify(tokens, null, 2);
     fs.writeFile(__dirname + "/tokens/tokens.json", updatedTokens, (err) => {
-      if (err) emitter.emit("error", "ERROR", "Problem appending tokens.json.");
+      if (err) emitter.emit("error", "ERROR", "Problem updating tokens.json.");
       else {
         console.log(`New token was created for ${newToken.username}.`);
       }
     });
   });
 };
+
+
 
 let tokenUpdate = (updateType, userName, newData) => {
   if (updateType !== "p" && updateType !== "e") {
@@ -56,7 +60,6 @@ let tokenUpdate = (updateType, userName, newData) => {
           tokens[tokenIndex].email = newData;
         }
         const updatedTokens = JSON.stringify(tokens, null, 2);
-
         fs.writeFile(
           __dirname + "/tokens/tokens.json",
           updatedTokens,
@@ -89,7 +92,6 @@ let tokenUpdate = (updateType, userName, newData) => {
     });
   }
 };
-
 let tokens = () => {
   if (!fs.existsSync(path.join(__dirname, "./tokens/tokens.json"))) {
     console.log('No tokens.json found. Please use "PO init --all"');
@@ -110,6 +112,8 @@ let tokens = () => {
           case "e":
             tokenUpdate(myArgs[2], myArgs[3], myArgs[4]);
             break;
+          case "d":
+            deleteToken(myArgs[3]);
         }
         break;
       case "--search":
@@ -125,5 +129,4 @@ let tokens = () => {
     }
   }
 };
-
 module.exports.tokens = tokens;
