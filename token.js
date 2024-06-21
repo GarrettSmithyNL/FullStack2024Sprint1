@@ -41,7 +41,7 @@ function newToken() {
 
     // Prevents creating a token without required fields, entering nothing after --new will also cause the error to display
     if (!firstName || !lastName || !email) {
-        console.error('Error: Missing required fields. First name, last name, and email are required.');
+        console.error('Error: Missing required fields. First name, last name, and email are required. enter as John Smith example@123.com');
         return;
     }
 

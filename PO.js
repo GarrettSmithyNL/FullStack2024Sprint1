@@ -24,7 +24,7 @@ switch (myArgs[0]) {
     break;
   case "token":
   case "t":
-    if (DEBUG) console.log(myArgs[0], '- generating token....');
+    if (DEBUG) console.log(myArgs[0], '- tokenApp called');
     tokenApp();
     emitter.emit("event", "EVENT", "Called token");
     break;
