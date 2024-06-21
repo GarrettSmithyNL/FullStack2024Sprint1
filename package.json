@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/GarrettSmithyNL/FullStack2024Sprint1#readme",
   "dependencies": {
+    "buffer-crc32": "^1.0.0",
     "color": "^4.2.3",
     "crc": "^4.3.2",
+    "crc32": "^0.2.2",
     "date-fns": "^3.6.0",
     "prompt-sync": "^4.2.0",
     "uuid": "^10.0.0"

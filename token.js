@@ -3,6 +3,10 @@ const { format } = require("date-fns");
 const fs = require("fs");
 const path = require("path");
 const emitter = require("./emitter.js");
+const { addDays } = require("date-fns");
+const crc32 = require('crc/crc32');
+
+
 
 let tokenNew = (newUsername) => {
   let newToken = JSON.parse(`{
@@ -17,8 +21,8 @@ let tokenNew = (newUsername) => {
 
   newToken.created = format(new Date(), "yyyy-MM-dd HH:mm:ss");
   newToken.username = newUsername;
-
-  // add the token generation here
+  newToken.expires = format(addDays(new Date(), 3), 'yyyy-MM-dd HH:mm:ss');
+  newToken.token = crc32(newUsername).toString(8);
 
   fs.readFile(__dirname + "/tokens/tokens.json", "utf-8", (error, data) => {
     if (error) throw error;
