@@ -1,6 +1,7 @@
 const myArgs = process.argv.slice(2);
 const { format } = require("date-fns");
 const fs = require("fs");
+const readline = require("readline");
 const path = require("path");
 const emitter = require("./emitter.js");
 const { addDays } = require("date-fns");
@@ -92,6 +93,8 @@ let tokenUpdate = (updateType, userName, newData) => {
     });
   }
 };
+
+
 let tokens = () => {
   if (!fs.existsSync(path.join(__dirname, "./tokens/tokens.json"))) {
     console.log('No tokens.json found. Please use "PO init --all"');
@@ -112,8 +115,6 @@ let tokens = () => {
           case "e":
             tokenUpdate(myArgs[2], myArgs[3], myArgs[4]);
             break;
-          case "d":
-            deleteToken(myArgs[3]);
         }
         break;
       case "--search":
