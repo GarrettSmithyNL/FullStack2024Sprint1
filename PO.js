@@ -2,7 +2,7 @@ global.DEBUG = false;
 
 const fs = require("fs");
 const { checkAppInit } = require("./init.js");
-const { tokenApp } = require("./token.js");
+
 
 const emitter = require("./emitter.js");
 
@@ -25,7 +25,6 @@ switch (myArgs[0]) {
   case "token":
   case "t":
     if (DEBUG) console.log(myArgs[0], '- tokenApp called');
-    tokenApp();
     emitter.emit("event", "EVENT", "Called token");
     break;
   case "--help":
