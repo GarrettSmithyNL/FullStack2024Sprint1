@@ -2,11 +2,12 @@ global.DEBUG = false;
 
 const { checkAppInit, initalizeApp } = require("./init.js");
 const { tokens } = require("./token.js");
-const { createServer } = require("./routes.js");
 const emitter = require("./emitter.js");
 
+// Get the command line arguments
 const myArgs = process.argv.slice(2);
 
+// Check if the DEBUG flag is set
 if (DEBUG && myArgs.length >= 1) console.log("My Args: " + myArgs);
 
 switch (myArgs[0]) {

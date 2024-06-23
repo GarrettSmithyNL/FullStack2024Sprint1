@@ -1,5 +1,4 @@
 const http = require("http");
-const path = require("path");
 const emitter = require("./emitter.js");
 const fs = require("fs");
 const queryString = require("querystring");
@@ -7,6 +6,7 @@ const queryString = require("querystring");
 const port = 3000;
 
 const redirect = (path, response) => {
+  // Redirect the user to the given path
   response.statusCode = 302;
   response.setHeader("location", path);
   response.end();
@@ -15,9 +15,11 @@ const redirect = (path, response) => {
 const readFile = (path, response) => {
   fs.readFile(path, "utf8", (error, data) => {
     if (error) {
+      // If there is an error, send a 500 status code and an error message
       response.statusCode = 500;
       emitter.emit("error", "ERROR", `"${path}" was not found`);
     } else {
+      // If there is no error, send the data back in the response
       response.setHeader("Content-Type", "text/html");
       response.write(data);
       response.end();
@@ -25,7 +27,28 @@ const readFile = (path, response) => {
   });
 };
 
-let getToken = () => {};
+let getToken = (username) => {
+  // Read the tokens.json file
+  let data = fs.readFileSync("./tokens/tokens.json");
+  try {
+    // Parse the data from the tokens.json file
+    let tokens = JSON.parse(data);
+    // Find the token for the given username
+    let user = tokens.find((token) => token.username === username);
+    if (user) {
+      // If the token is found, return the token of the user
+      emitter.emit("event", "EVENT", `Token for ${username} found.`);
+      return user.token;
+    } else {
+      // If the token is not found, emit an error event and return a message
+      emitter.emit("error", "ERROR", `Token for ${username} not found.`);
+      return "User not found";
+    }
+  } catch (parseError) {
+    // If there is an error parsing the tokens.json file, emit an error event
+    emitter.emit("error", "ERROR", `Error parsing tokens.json: ${parseError}`);
+  }
+};
 
 const server = http.createServer((request, response) => {
   // Log the requested URL if the DEBUG variable is set to true
@@ -36,25 +59,34 @@ const server = http.createServer((request, response) => {
     }
   }
 
+  // Check if the request method is POST
   if (request.method === "POST") {
+    // Get the body of the request
     let body = "";
     request.on("data", (chunk) => {
       body += chunk.toString();
     });
     request.on("end", () => {
+      // Parse the body of the request
       const parsedBody = queryString.parse(body);
+      // Get the username from the parsed body
       userName = parsedBody.username;
-      console.log("User Name: " + userName);
+      // Read the tokens.html file
       fs.readFile("./views/tokens.html", "utf8", (err, data) => {
         if (err) {
+          // If there is an error, send a 500 status code and an error message
           response.writeHead(500, { "Content-Type": "text/html" });
           emitter.emit("error", "ERROR", "Error loading the page");
           response.end("<h1>Error loading the page</h1>");
         } else {
-          // Modify the HTML content to include the additional section
+          // If there is no error, modify the HTML to include the username and token
           const updatedHtml = data.replace(
             "</body>",
-            `<div>User Name: ${userName}</div></body>`
+            ` <div>
+                <h3>User Name: ${userName}</h3>
+                <h3>Token: ${getToken(userName)}</h3>
+              </div>
+            </body>`
           );
 
           // Send the modified HTML back in the response
