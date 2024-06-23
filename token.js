@@ -18,7 +18,7 @@ let tokenNew = (newUsername) => {
   newToken.created = format(new Date(), "yyyy-MM-dd HH:mm:ss");
   newToken.username = newUsername;
 
-  // add the token generation here
+  // Place token generation
 
   fs.readFile(__dirname + "/tokens/tokens.json", "utf-8", (error, data) => {
     if (error) throw error;

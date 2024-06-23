@@ -1,4 +1,4 @@
-const folders = ["tokens"];
+const folders = ["tokens", "config"];
 
 const configjson = {
   name: "AppConfigCLI",

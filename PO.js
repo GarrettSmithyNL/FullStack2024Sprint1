@@ -1,8 +1,9 @@
 global.DEBUG = false;
 
 const { checkAppInit, initalizeApp } = require("./init.js");
-const emitter = require("./emitter.js");
 const { tokens } = require("./token.js");
+const { createServer } = require("./routes.js");
+const emitter = require("./emitter.js");
 
 const myArgs = process.argv.slice(2);
 
