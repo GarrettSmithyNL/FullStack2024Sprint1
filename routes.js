@@ -4,6 +4,7 @@ const fs = require("fs");
 const queryString = require("querystring");
 
 const port = 3000;
+const configPath = './config.json'; // define the config file path
 
 const redirect = (path, response) => {
   // Redirect the user to the given path
@@ -59,9 +60,63 @@ const server = http.createServer((request, response) => {
     }
   }
 
-  // Check if the request method is POST
-  if (request.method === "POST") {
-    // Get the body of the request
+  // Route to view the config file
+  if (request.method === 'GET' && request.url === '/view-config') { 
+    fs.readFile(configPath, 'utf8', (err, data) => {
+      if (err) {
+        response.writeHead(500, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ error: 'Unable to read config file' }));
+        return;
+      }
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.end(data);
+    });
+    return;
+  }
+
+  // Route to update the config file
+  if (request.method === 'POST' && request.url === '/update-config') { 
+    let body = '';
+    request.on('data', chunk => {
+      body += chunk.toString();
+    });
+    request.on('end', () => {
+      const newConfig = JSON.parse(body);
+      fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), 'utf8', (err) => {
+        if (err) {
+          response.writeHead(500, { 'Content-Type': 'application/json' });
+          response.end(JSON.stringify({ error: 'Unable to update config file' }));
+          return;
+        }
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ message: 'Config file updated successfully' }));
+      });
+    });
+    return;
+  }
+
+  // Route to reset the config file
+  if (request.method === 'POST' && request.url === '/reset-config') { 
+    const defaultConfig = {
+      key1: "defaultValue1",
+      key2: "defaultValue2"
+      // Add default values as needed
+    };
+
+    fs.writeFile(configPath, JSON.stringify(defaultConfig, null, 2), 'utf8', (err) => {
+      if (err) {
+        response.writeHead(500, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ error: 'Unable to reset config file' }));
+        return;
+      }
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify({ message: 'Config file reset successfully' }));
+    });
+    return;
+  }
+
+  // Handle POST requests to /tokens
+  if (request.method === 'POST' && request.url === '/tokens') {
     let body = "";
     request.on("data", (chunk) => {
       body += chunk.toString();
@@ -69,12 +124,12 @@ const server = http.createServer((request, response) => {
     request.on("end", () => {
       // Parse the body of the request
       const parsedBody = queryString.parse(body);
-      // Get the username from the parsed body
+       // Get the username from the parsed body
       userName = parsedBody.username;
       // Read the tokens.html file
       fs.readFile("./views/tokens.html", "utf8", (err, data) => {
         if (err) {
-          // If there is an error, send a 500 status code and an error message
+           // If there is an error, send a 500 status code and an error message
           response.writeHead(500, { "Content-Type": "text/html" });
           emitter.emit("error", "ERROR", "Error loading the page");
           response.end("<h1>Error loading the page</h1>");
@@ -98,6 +153,7 @@ const server = http.createServer((request, response) => {
     // Set the status code to 200
     response.statusCode = 200;
     // Set the content type to text/html
+    response.setHeader("Content-Type", "text/html");
     switch (request.url) {
       // Check the requested URL and send the corresponding file
       case "/":
@@ -124,3 +180,4 @@ const server = http.createServer((request, response) => {
 server.listen(port, () => {
   console.log("Server running!");
 });
+
