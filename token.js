@@ -4,6 +4,10 @@ const { crc32 } = require("crc");
 const fs = require("fs");
 const path = require("path");
 const emitter = require("./emitter.js");
+const { addDays } = require("date-fns");
+const crc32 = require('crc/crc32');
+
+
 
 let tokenNew = (newUsername) => {
   // Create a new token for the given username
@@ -34,13 +38,12 @@ let tokenNew = (newUsername) => {
     let tokens = JSON.parse(data);
     // Push the new token to the tokens array
     tokens.push(newToken);
-    // Update the tokens array with the new token
-    updatedTokens = JSON.stringify(tokens);
-
+    // Pretty-print the JSON with an indentation of 2 spaces
+    let updatedTokens = JSON.stringify(tokens, null, 2);
     // Write the updated tokens array to the tokens.json file
     fs.writeFile(__dirname + "/tokens/tokens.json", updatedTokens, (err) => {
       // If there is an error, emit an error event
-      if (err) emitter.emit("error", "ERROR", "Problem appending tokens.json.");
+      if (err) emitter.emit("error", "ERROR", "Problem updating tokens.json.");
       else {
         // If there is no error, log a message that a new token was created
         console.log(`New token was created for ${newToken.username}.`);
@@ -48,6 +51,8 @@ let tokenNew = (newUsername) => {
     });
   });
 };
+
+
 
 let tokenUpdate = (updateType, userName, newData) => {
   // Check if the update type is either "p" or "e"
@@ -112,6 +117,66 @@ let tokenUpdate = (updateType, userName, newData) => {
   }
 };
 
+function searchByUsername(username) {
+  fs.readFile(path.join(__dirname, "/tokens/tokens.json"), "utf-8", (error, data) => {
+    if (error) {
+      console.error("Problem reading tokens.json:", error);
+      return;
+    }
+    try {
+      const tokens = JSON.parse(data);
+      const user = tokens.find(token => token.username === username);
+      if (user) {
+        console.log(`User found:`, user);
+      } else {
+        console.log(`User with username ${username} not found.`);
+      }
+    } catch (parseError) {
+      console.error("Error parsing tokens.json:", parseError);
+    }
+  });
+}
+
+function searchByEmail(email) {
+  fs.readFile(path.join(__dirname, "/tokens/tokens.json"), "utf-8", (error, data) => {
+    if (error) {
+      console.error("Problem reading tokens.json:", error);
+      return;
+    }
+    try {
+      const tokens = JSON.parse(data);
+      const user = tokens.find(token => token.email === email);
+      if (user) {
+        console.log(`User found:`, user);
+      } else {
+        console.log(`User with email ${email} not found.`);
+      }
+    } catch (parseError) {
+      console.error("Error parsing tokens.json:", parseError);
+    }
+  });
+}
+
+function searchByPhone(phone) {
+  fs.readFile(path.join(__dirname, "/tokens/tokens.json"), "utf-8", (error, data) => {
+    if (error) {
+      console.error("Problem reading tokens.json:", error);
+      return;
+    }
+    try {
+      const tokens = JSON.parse(data);
+      const user = tokens.find(token => token.phone === phone);
+      if (user) {
+        console.log(`User found:`, user);
+      } else {
+        console.log(`User with phone number ${phone} not found.`);
+      }
+    } catch (parseError) {
+      console.error("Error parsing tokens.json:", parseError);
+    }
+  });
+
+}
 let tokens = () => {
   // Check if the tokens.json file exists
   if (!fs.existsSync(path.join(__dirname, "./tokens/tokens.json"))) {
@@ -143,15 +208,17 @@ let tokens = () => {
       case "--search":
         switch (myArgs[2]) {
           case "u":
+            searchByUsername(myArgs[3]);
             break;
           case "e":
+            searchByEmail(myArgs[3]);
             break;
           case "p":
+            searchByPhone(myArgs[3]);
             break;
         }
         break;
     }
   }
 };
-
 module.exports.tokens = tokens;
