@@ -67,11 +67,23 @@ const resetConfig = () => {
   });
 };
 
+// Display help information
+const displayHelp = () => {
+  console.log('Usage:');
+  console.log('  config.js help               displays help for the config command');
+  console.log('  config.js view               displays a list of the current config settings');
+  console.log('  config.js reset              resets the config file with default settings');
+  console.log('  config.js update <key> <value>  sets a specific config setting');
+};
+
 // Print the command being executed
 console.log(`Running command: ${command}`);
 
 // Execute the appropriate function based on the command
 switch (command) {
+  case 'help':
+    displayHelp();
+    break;
   case 'view':
     readConfig();
     break;
@@ -89,9 +101,10 @@ switch (command) {
     resetConfig();
     break;
   default:
-    console.error('Unknown command. Use "view", "update <key> <value>", or "reset".');
+    console.error('Unknown command. Use "help", "view", "update <key> <value>", or "reset".');
     process.exit(1);
 }
+
 
 
 
