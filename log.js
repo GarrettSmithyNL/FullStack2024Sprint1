@@ -2,7 +2,6 @@ const fs = require("fs");
 const { getYear, format } = require("date-fns");
 const fsPromise = require("fs").promises;
 const path = require("path");
-const emitter = require("./emitter.js");
 
 let createLogFolders = async (logItem) => {
   // Create the log folders
@@ -29,7 +28,7 @@ let createLogFolders = async (logItem) => {
     createLogFile(logItem, currentFolder);
   } catch {
     // If there is an error creating the log folders, emit an error event
-    emitter.emit("error", "ERROR", "Problem create/appending file.");
+    console.log("Error creating log folders.");
   }
 };
 

@@ -2,111 +2,145 @@
 // for cross platform compatibility
 
 // Import necessary modules
-const fs = require('fs');
-const path = require('path');
-const { configjson } = require('./templates.js'); // Import the config template from templates.js
-const configPath = path.join(__dirname, 'config.json'); // Define the path to the config file
+const fs = require("fs");
+const path = require("path");
+const { configjson } = require("./templates.js"); // Import the config template from templates.js
+const emitter = require("./emitter.js");
+
+const configHelp = `
+Usage:
+
+PO config --help                       displays help for the config command
+PO config --show                       displays a list of the current config settings
+PO config --reset                      resets the config file to the default settings
+PO config --set <option> <value>       sets a specific config setting
+`;
 
 // Get command line arguments and the command to execute
 const args = process.argv.slice(2);
-const command = args[0];
 
 // Ensure that the config file exists, if not create it using the default template
 const ensureConfigFileExists = () => {
-  if (!fs.existsSync(configPath)) {
-    console.log(`Config file not found. Creating default config at ${configPath}`);
-    fs.writeFileSync(configPath, JSON.stringify(configjson, null, 2));
+  if (!fs.existsSync(path.join(__dirname, "/config/config.json"))) {
+    console.log(
+      `Config file not found. Creating default config at ${configPath}`
+    );
+    fs.writeFileSync(
+      path.join(__dirname, "/config/config.json"),
+      JSON.stringify(configjson, null, 2)
+    );
   }
 };
 
 // Read and display the contents of the config file
 const readConfig = () => {
   ensureConfigFileExists();
-  console.log(`Attempting to read config file from ${configPath}`);
-  fs.readFile(configPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading config file:', err);
-      process.exit(1);
-    } else {
-      console.log('Config file content:\n', data);
+  fs.readFile(
+    path.join(__dirname, "/config/config.json"),
+    "utf8",
+    (error, data) => {
+      if (error) {
+        emitter.emit("error", "ERROR", "Error reading config file.");
+      } else {
+        console.log("Config file content:\n", data);
+        emitter.emit("event", "EVENT", "Config file read.");
+      }
     }
-  });
+  );
 };
 
 // Update a specific key-value pair in the config file
 const updateConfig = (key, value) => {
   ensureConfigFileExists();
-  fs.readFile(configPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading config file:', err);
-      process.exit(1);
-    } else {
-      const config = JSON.parse(data);
-      config[key] = value;
-      fs.writeFile(configPath, JSON.stringify(config, null, 2), (err) => {
-        if (err) {
-          console.error('Error writing config file:', err);
-          process.exit(1);
-        } else {
-          console.log('Config file updated successfully');
+  fs.readFile(
+    path.join(__dirname, "/config/config.json"),
+    "utf8",
+    (error, data) => {
+      if (error) {
+        emitter.emit("error", "ERROR", "Error reading config file.");
+      } else {
+        const config = JSON.parse(data);
+        switch (key) {
+          case "name":
+            config.name = value;
+            break;
+          case "version":
+            config.version = value;
+            break;
+          case "description":
+            config.description = value;
+            break;
+          case "main":
+            config.main = value;
+            break;
+          case "superuser":
+            config.superuser = value;
+            break;
+          case "database":
+            config.database = value;
+            break;
         }
-      });
+        fs.writeFile(
+          path.join(__dirname, "/config/config.json"),
+          JSON.stringify(config, null, 2),
+          (error) => {
+            if (error) {
+              emitter.emit("error", "ERROR", "Error updating config file.");
+            } else {
+              console.log("Config file updated successfully");
+              emitter.emit("event", "UPDATE", "Config file updated.");
+            }
+          }
+        );
+      }
     }
-  });
+  );
 };
 
 // Reset the config file to the default configuration from the template
 const resetConfig = () => {
-  fs.writeFile(configPath, JSON.stringify(configjson, null, 2), (err) => {
-    if (err) {
-      console.error('Error resetting config file:', err);
-      process.exit(1);
-    } else {
-      console.log('Config file reset successfully');
+  fs.writeFile(
+    path.join(__dirname, "/config/config.json"),
+    JSON.stringify(configjson, null, 2),
+    (error) => {
+      if (error) {
+        emitter.emit("error", "ERROR", "Error resetting config file.");
+      } else {
+        console.log("Config file reset successfully");
+        emitter.emit("event", "UPDATE", "Config file reset.");
+      }
     }
-  });
+  );
 };
 
-// Display help information
-const displayHelp = () => {
-  console.log('Usage:');
-  console.log('  config.js help               displays help for the config command');
-  console.log('  config.js view               displays a list of the current config settings');
-  console.log('  config.js reset              resets the config file with default settings');
-  console.log('  config.js update <key> <value>  sets a specific config setting');
+let config = () => {
+  // Execute the appropriate function based on the command
+  switch (args[1]) {
+    case "--help":
+      console.log(configHelp);
+      emitter.emit("event", "HELP", "Called config help");
+      break;
+    case "--show":
+      readConfig();
+      emitter.emit("event", "EVENT", "Called show config");
+      break;
+    case "--set":
+      updateConfig(args[2], args[3]);
+      emitter.emit("event", "EVENT", "Called set config");
+      break;
+    case "--reset":
+      resetConfig();
+      emitter.emit("event", "EVENT", "Called reset config");
+      break;
+    default:
+      console.error(
+        'Unknown command. Use "help", "view", "update <key> <value>", or "reset".'
+      );
+      emitter.emit("error", "ERROR", "Unknown command in config");
+      break;
+  }
 };
 
-// Print the command being executed
-console.log(`Running command: ${command}`);
-
-// Execute the appropriate function based on the command
-switch (command) {
-  case 'help':
-    displayHelp();
-    break;
-  case 'view':
-    readConfig();
-    break;
-  case 'update':
-    const key = args[1];
-    const value = args[2];
-    if (!key || !value) {
-      console.error('Usage: update <key> <value>');
-      process.exit(1);
-    } else {
-      updateConfig(key, value);
-    }
-    break;
-  case 'reset':
-    resetConfig();
-    break;
-  default:
-    console.error('Unknown command. Use "help", "view", "update <key> <value>", or "reset".');
-    process.exit(1);
-}
-
-
-
-
-
-
+module.exports = {
+  config,
+};

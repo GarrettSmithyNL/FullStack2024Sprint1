@@ -5,6 +5,15 @@ const path = require("path");
 const emitter = require("./emitter.js");
 const { folders, configjson, tokenjson } = require("./templates.js");
 
+const initHelp = `
+Usage:
+
+PO init --help                         displays help for the init command
+PO init --all                          creates the folder structure and config and tokens files
+PO init --mk                           creates the folder structure
+PO init --cat                          creates the config file with default settings and the tokens file
+`;
+
 function checkAppInit() {
   // Check if the init has been run
   if (fs.existsSync("./PO.js")) {
@@ -49,9 +58,6 @@ let createFolders = () => {
 };
 
 let createFiles = () => {
-  // Creates files
-  // Add other files here
-  // Creates users.json
   try {
     // Create the tokens.json file
     let tokenData = JSON.stringify(tokenjson, null, 2);
@@ -70,6 +76,22 @@ let createFiles = () => {
       // If the tokens.json file already exists, log a message
       console.log("tokens.json already created.");
     }
+    let configData = JSON.stringify(configjson, null, 2);
+    if (!fs.existsSync(path.join(__dirname, "./config/config.json"))) {
+      // If the tokens.json file does not exist, create it
+      fs.writeFile("./config/config.json", configData, (error) => {
+        if (error) {
+          // If there is an error creating the tokens.json file, emit an error event
+          emitter.emit("error", "ERROR", `Error creating config.json.`);
+        } else {
+          // If there is no error, log a message that the data was written to the tokens file
+          console.log("Data written to config file.");
+        }
+      });
+    } else {
+      // If the tokens.json file already exists, log a message
+      console.log("config.json already created.");
+    }
   } catch {
     // If there is an error creating the tokens.json file, emit an error event
     emitter.emit("error", "ERROR", `Error creating files.`);
@@ -78,26 +100,27 @@ let createFiles = () => {
 
 let initalizeApp = () => {
   // Initialize the app
-  if (DEBUG) console.log("initializeApp()");
   switch (myArgs[1]) {
+    case "--help":
+      // Display help for the init command
+      console.log(initHelp);
+      emitter.emit("event", "HELP", `Displayed help for the init command.`);
+      break;
     case "--all":
       // Create all folders and files
-      if (DEBUG) console.log("--all createFolders() & createFiles()");
       createFolders();
       createFiles();
-      emitter.emit("event", "EVENT", `Created all the files and folders.`);
+      emitter.emit("event", "CREATE", `Created all the files and folders.`);
       break;
     case "--mk":
       // Create all folders
-      if (DEBUG) console.log("--mk createFolders()");
       createFolders();
-      emitter.emit("event", "EVENT", `Created all folders.`);
+      emitter.emit("event", "CREATE", `Created all folders.`);
       break;
     case "--cat":
       // Create all files
-      if (DEBUG) console.log("--cat createFiles()");
       createFiles();
-      emitter.emit("event", "EVENT", `Created all files.`);
+      emitter.emit("event", "CREATE", `Created all files.`);
       break;
   }
 };

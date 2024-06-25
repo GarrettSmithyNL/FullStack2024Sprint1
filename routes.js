@@ -51,17 +51,7 @@ let getToken = (username) => {
 };
 
 const server = http.createServer((request, response) => {
-  // Log the requested URL if the DEBUG variable is set to true
-  if (DEBUG) {
-    if (request.url == "/favicon.ico") {
-    } else {
-
-      console.log("Request received for: " + request.url);
-    }
-  }
-
   if (request.method === "POST" && request.url === "/tokens") {
-
     let body = "";
     request.on("data", (chunk) => {
       body += chunk.toString();
@@ -69,12 +59,12 @@ const server = http.createServer((request, response) => {
     request.on("end", () => {
       // Parse the body of the request
       const parsedBody = queryString.parse(body);
-       // Get the username from the parsed body
+      // Get the username from the parsed body
       userName = parsedBody.username;
       // Read the tokens.html file
-      fs.readFile("./views/tokens.html", "utf8", (err, data) => {
-        if (err) {
-           // If there is an error, send a 500 status code and an error message
+      fs.readFile("./views/tokens.html", "utf8", (error, data) => {
+        if (error) {
+          // If there is an error, send a 500 status code and an error message
           response.writeHead(500, { "Content-Type": "text/html" });
           emitter.emit("error", "ERROR", "Error loading the page");
           response.end("<h1>Error loading the page</h1>");
@@ -104,9 +94,11 @@ const server = http.createServer((request, response) => {
       case "/":
       case "/home":
         readFile("./views/index.html", response);
+        emitter.emit("event", "EVENT", "User visited the home page");
         break;
       case "/tokens":
         readFile("./views/tokens.html", response);
+        emitter.emit("event", "EVENT", "User visited the tokens page");
         break;
       case "/favicon.ico":
         // If the requested URL is for the favicon, do nothing
@@ -123,6 +115,6 @@ const server = http.createServer((request, response) => {
 
 // Start the server
 server.listen(port, () => {
-  console.log("Server running!");
+  emitter.emit("event", "EVENT", `Server running at http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
-
