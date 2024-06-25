@@ -1,5 +1,9 @@
-const folders = ["tokens"];
+// Description: This file contains the template data for the CLI.
 
+// List of folders to create
+const folders = ["tokens", "config"];
+
+// JSON object for the config.json file
 const configjson = {
   name: "AppConfigCLI",
   version: "1.0.0",
@@ -9,6 +13,7 @@ const configjson = {
   database: "exampledb",
 };
 
+// JSON object for the tokens.json file
 const tokenjson = [
   {
     created: "1969-01-31 12:30:00",

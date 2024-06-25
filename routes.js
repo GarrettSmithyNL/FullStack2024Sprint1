@@ -55,16 +55,17 @@ const server = http.createServer((request, response) => {
   if (DEBUG) {
     if (request.url == "/favicon.ico") {
     } else {
+
       console.log("Request received for: " + request.url);
     }
   }
 
   if (request.method === "POST" && request.url === "/tokens") {
+
     let body = "";
     request.on("data", (chunk) => {
       body += chunk.toString();
     });
-
     request.on("end", () => {
       // Parse the body of the request
       const parsedBody = queryString.parse(body);
