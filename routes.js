@@ -4,7 +4,6 @@ const fs = require("fs");
 const queryString = require("querystring");
 
 const port = 3000;
-const configPath = './config.json'; // define the config file path
 
 const redirect = (path, response) => {
   // Redirect the user to the given path
@@ -56,67 +55,13 @@ const server = http.createServer((request, response) => {
   if (DEBUG) {
     if (request.url == "/favicon.ico") {
     } else {
-      console.log("Requested URL: " + request.url);
+
+      console.log("Request received for: " + request.url);
     }
   }
 
-  // Route to view the config file
-  if (request.method === 'GET' && request.url === '/view-config') { 
-    fs.readFile(configPath, 'utf8', (err, data) => {
-      if (err) {
-        response.writeHead(500, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({ error: 'Unable to read config file' }));
-        return;
-      }
-      response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.end(data);
-    });
-    return;
-  }
+  if (request.method === "POST" && request.url === "/tokens") {
 
-  // Route to update the config file
-  if (request.method === 'POST' && request.url === '/update-config') { 
-    let body = '';
-    request.on('data', chunk => {
-      body += chunk.toString();
-    });
-    request.on('end', () => {
-      const newConfig = JSON.parse(body);
-      fs.writeFile(configPath, JSON.stringify(newConfig, null, 2), 'utf8', (err) => {
-        if (err) {
-          response.writeHead(500, { 'Content-Type': 'application/json' });
-          response.end(JSON.stringify({ error: 'Unable to update config file' }));
-          return;
-        }
-        response.writeHead(200, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({ message: 'Config file updated successfully' }));
-      });
-    });
-    return;
-  }
-
-  // Route to reset the config file
-  if (request.method === 'POST' && request.url === '/reset-config') { 
-    const defaultConfig = {
-      key1: "defaultValue1",
-      key2: "defaultValue2"
-      // Add default values as needed
-    };
-
-    fs.writeFile(configPath, JSON.stringify(defaultConfig, null, 2), 'utf8', (err) => {
-      if (err) {
-        response.writeHead(500, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({ error: 'Unable to reset config file' }));
-        return;
-      }
-      response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify({ message: 'Config file reset successfully' }));
-    });
-    return;
-  }
-
-  // Handle POST requests to /tokens
-  if (request.method === 'POST' && request.url === '/tokens') {
     let body = "";
     request.on("data", (chunk) => {
       body += chunk.toString();
