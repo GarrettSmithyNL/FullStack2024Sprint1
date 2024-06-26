@@ -47,7 +47,7 @@ let createFolders = () => {
 
   if (mkCount === 0) {
     // If no folders were created, emit an event
-    console.log("All folder alreat exist.");
+    console.log("All folder already exist.");
   } else if (mkCount < folders.length) {
     // If some folders were created, emit an event
     console.log(mkCount + " of " + folders.length + "folders were created.");
