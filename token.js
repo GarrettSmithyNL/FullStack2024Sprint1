@@ -126,47 +126,60 @@ let tokenUpdate = (updateType, userName, newData) => {
 };
 
 function searchByUsername(username) {
+  // Read the tokens.json file
   fs.readFile(
     path.join(__dirname, "/tokens/tokens.json"),
     "utf-8",
     (error, data) => {
+      // If there is an error, emit an error event
       if (error) {
         emitter.emit("error", "ERROR", "Problem reading tokens.json.");
         return;
       }
       try {
+        // Parse the data from the tokens.json file
         const tokens = JSON.parse(data);
+        // Find the token for the given username
         const user = tokens.find((token) => token.username === username);
+        // If the token is found, log the token
         if (user) {
           console.log(`The token for ${username} is: ${user.token}`);
         } else {
+          // If the token is not found, log a message that the user was not found
           console.log(`User with username ${username} not found.`);
         }
       } catch (parseError) {
-        console.error("Error parsing tokens.json:", parseError);
+        // If there is an error parsing the JSON, emit an error event
+        emitter.emit("error", "ERROR", "Error parsing tokens.json.");
       }
     }
   );
 }
 
 function searchByEmail(email) {
+  // Read the tokens.json file
   fs.readFile(
     path.join(__dirname, "/tokens/tokens.json"),
     "utf-8",
     (error, data) => {
       if (error) {
+        // If there is an error, emit an error event
         emitter.emit("error", "ERROR", "Problem reading tokens.json.");
         return;
       }
       try {
+        // Parse the data from the tokens.json file
         const tokens = JSON.parse(data);
+        // Find the token for the given email
         const user = tokens.find((token) => token.email === email);
+        // If the token is found, log the token
         if (user) {
           console.log(`The token for ${user.username} is: ${user.token}`);
         } else {
           console.log(`User with email ${email} not found.`);
         }
       } catch (parseError) {
+        // If there is an error parsing the JSON, emit an error event
         emitter.emit("error", "ERROR", "Error parsing tokens.json.");
       }
     }
@@ -174,23 +187,29 @@ function searchByEmail(email) {
 }
 
 function searchByPhone(phone) {
+  // Read the tokens.json file
   fs.readFile(
     path.join(__dirname, "/tokens/tokens.json"),
     "utf-8",
     (error, data) => {
+      // If there is an error, emit an error event
       if (error) {
         emitter.emit("error", "ERROR", "Problem reading tokens.json.");
         return;
       }
       try {
+        // Parse the data from the tokens.json file
         const tokens = JSON.parse(data);
+        // Find the token for the given phone number
         const user = tokens.find((token) => token.phone === phone);
         if (user) {
           console.log(`The token for ${user.username} is: ${user.token}`);
         } else {
+          // If the token is not found, log a message that the user was not found
           console.log(`User with phone number ${phone} not found.`);
         }
       } catch (parseError) {
+        // If there is an error parsing the JSON, emit an error event
         emitter.emit("error", "ERROR", "Error parsing tokens.json.");
       }
     }
@@ -198,10 +217,13 @@ function searchByPhone(phone) {
 }
 
 let getCount = () => {
+  // Read the tokens.json file
   fs.readFile(__dirname + "/tokens/tokens.json", "utf-8", (error, data) => {
     if (error) {
+      // If there is an error, emit an error event
       emitter.emit("error", "ERROR", "Problem reading tokens.json.");
     } else {
+      // Parse the data from the tokens.json file
       const tokens = JSON.parse(data);
       console.log(`The count of tokens is: ${tokens.length - 1}`);
     }
@@ -216,10 +238,12 @@ let tokens = () => {
     // Check the arguments for the token command
     switch (myArgs[1]) {
       case "--help":
+        // Display the help message for the token command
         console.log(tokenHelp);
         emitter.emit("event", "HELP", "Token help displayed.");
         break;
       case "--count":
+        // Display the count of the tokens created
         getCount();
         emitter.emit("event", "EVENT", "Token count displayed.");
         break;
@@ -248,16 +272,20 @@ let tokens = () => {
         }
         break;
       case "--search":
+        // Search for the token by username, email, or phone number
         switch (myArgs[2]) {
           case "u":
+            // Search for the token by username
             searchByUsername(myArgs[3]);
             emitter.emit("event", "SEARCH", `Token searched for ${myArgs[3]}.`);
             break;
           case "e":
+            // Search for the token by email
             searchByEmail(myArgs[3]);
             emitter.emit("event", "SEARCH", `Token searched for ${myArgs[3]}.`);
             break;
           case "p":
+            // Search for the token by phone number
             searchByPhone(myArgs[3]);
             emitter.emit("event", "SEARCH", `Token searched for ${myArgs[3]}.`);
             break;

@@ -1,5 +1,3 @@
-global.DEBUG = false;
-
 const { checkAppInit, initalizeApp } = require("./init.js");
 const { tokens } = require("./token.js");
 const { config } = require("./config.js");
@@ -35,28 +33,29 @@ PO token --search p <phone>            fetches a token for a given phone number
 // Get the command line arguments
 const myArgs = process.argv.slice(2);
 
-// Check if the DEBUG flag is set
-if (DEBUG && myArgs.length >= 1) console.log("My Args: " + myArgs);
-
 switch (myArgs[0]) {
   case "init":
   case "i":
+    // Option for initializing the app
     if (DEBUG) console.log(myArgs[0], "- checking app initialization....");
     checkAppInit();
     initalizeApp();
     break;
   case "config":
   case "c":
+    // Option for setting the config
     config();
     emitter.emit("event", "EVENT", "Called config");
     break;
   case "token":
   case "t":
+    // Option for setting the tokens
     tokens();
     emitter.emit("event", "EVENT", "Called token");
     break;
   case "--help":
   case "--h":
+    // Option for displaying help
     console.log(poHelp);
     emitter.emit("event", "EVENT", "Called --help");
   default:

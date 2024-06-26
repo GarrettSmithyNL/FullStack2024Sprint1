@@ -21,11 +21,13 @@ const args = process.argv.slice(2);
 
 // Ensure that the config file exists, if not create it using the default template
 const ensureConfigFileExists = () => {
+  // Check if the config file exists
   if (!fs.existsSync(path.join(__dirname, "/config/config.json"))) {
     console.log(
       `Config file not found. Creating default config at ${configPath}`
     );
     fs.writeFileSync(
+      // Write the default config to the config file
       path.join(__dirname, "/config/config.json"),
       JSON.stringify(configjson, null, 2)
     );
@@ -34,14 +36,18 @@ const ensureConfigFileExists = () => {
 
 // Read and display the contents of the config file
 const readConfig = () => {
+  // Ensure that the config file exists
   ensureConfigFileExists();
+  // Read the config file
   fs.readFile(
     path.join(__dirname, "/config/config.json"),
     "utf8",
     (error, data) => {
       if (error) {
+        // If there is an error reading the config file, emit an error event
         emitter.emit("error", "ERROR", "Error reading config file.");
       } else {
+        // If the config file is read successfully, log the content
         console.log("Config file content:\n", data);
         emitter.emit("event", "EVENT", "Config file read.");
       }
@@ -51,16 +57,21 @@ const readConfig = () => {
 
 // Update a specific key-value pair in the config file
 const updateConfig = (key, value) => {
+  // Ensure that the config file exists
   ensureConfigFileExists();
+  // Read the config file
   fs.readFile(
     path.join(__dirname, "/config/config.json"),
     "utf8",
     (error, data) => {
       if (error) {
+        // If there is an error reading the config file, emit an error event
         emitter.emit("error", "ERROR", "Error reading config file.");
       } else {
+        // If the config file is read successfully, parse the data
         const config = JSON.parse(data);
         switch (key) {
+          // Update the specific key-value pair based on the key provided
           case "name":
             config.name = value;
             break;
@@ -80,13 +91,16 @@ const updateConfig = (key, value) => {
             config.database = value;
             break;
         }
+        // Write the updated config back to the config file
         fs.writeFile(
           path.join(__dirname, "/config/config.json"),
           JSON.stringify(config, null, 2),
           (error) => {
             if (error) {
+              // If there is an error updating the config file, emit an error event
               emitter.emit("error", "ERROR", "Error updating config file.");
             } else {
+              // If the config file is updated successfully, log a message
               console.log("Config file updated successfully");
               emitter.emit("event", "UPDATE", "Config file updated.");
             }
