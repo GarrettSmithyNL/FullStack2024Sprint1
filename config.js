@@ -1,6 +1,3 @@
-#!/usr/bin/env node
-// for cross platform compatibility
-
 // Import necessary modules
 const fs = require("fs");
 const path = require("path");
@@ -148,7 +145,7 @@ let config = () => {
       break;
     default:
       console.error(
-        'Unknown command. Use "help", "view", "update <key> <value>", or "reset".'
+        'Unknown command. Use "help", "show", "update <key> <value>", or "reset".'
       );
       emitter.emit("error", "ERROR", "Unknown command in config");
       break;
